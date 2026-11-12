@@ -1,0 +1,15 @@
+# GPU base image for the SAM 3 function (deploy.ps1 / deploy.sh gpu). Needs NVIDIA driver + nvidia-container-toolkit on the host.
+# torch 2.10.0 from PyPI is the CUDA 12.8 build; its CUDA runtime comes as nvidia-* wheels, so a plain Python base is enough.
+# Wheels (~4 GB) are taken from the build context "wheels" (autolabel/wheels, filled resumably beforehand, see README) via a
+# bind mount, so a dropped connection never restarts the big download and there is no copy layer.
+# --no-index: with an index pip re-downloads the same files from PyPI instead of using /wheels.
+FROM python:3.12-slim
+ENV PIP_DEFAULT_TIMEOUT=60 PIP_RETRIES=10
+RUN --mount=type=bind,from=wheels,target=/wheels \
+    pip install --no-cache-dir --no-index --find-links /wheels torch==2.10.0 torchvision==0.25.0 "numpy>=1.26,<2" pillow
+# GitHub archive instead of git+https: no git in the image, no repo history download. No weights here (mounted).
+# einops, pycocotools, psutil: imported by sam3 at this commit but not declared in its pyproject.
+RUN --mount=type=cache,target=/root/.cache/pip pip install "numpy>=1.26,<2" "setuptools<81" einops pycocotools psutil \
+    https://github.com/facebookresearch/sam3/archive/f92a5efc4001ebfe9d050d43e61f6fb10e02d73c.tar.gz
+# fail the build, not the first inference, if an import is missing
+RUN python -c "from sam3.model_builder import build_sam3_image_model; from sam3.model.sam3_image_processor import Sam3Processor"

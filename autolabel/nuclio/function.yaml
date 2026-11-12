@@ -1,0 +1,50 @@
+metadata:
+  name: sam3-autolabel
+  namespace: cvat
+  annotations:
+    name: SAM 3 auto-label (Day03)
+    version: 1
+    type: detector
+    spec: |
+      [
+        { "id": 0, "name": "road", "type": "mask" },
+        { "id": 1, "name": "sidewalk", "type": "mask" },
+        { "id": 2, "name": "building", "type": "mask" },
+        { "id": 3, "name": "vegetation", "type": "mask" },
+        { "id": 4, "name": "sky", "type": "mask" },
+        { "id": 5, "name": "person", "type": "mask" },
+        { "id": 6, "name": "bicycle", "type": "mask" },
+        { "id": 7, "name": "car", "type": "mask" },
+        { "id": 8, "name": "motorcycle", "type": "mask" },
+        { "id": 9, "name": "bus", "type": "mask" },
+        { "id": 10, "name": "truck", "type": "mask" },
+        { "id": 11, "name": "traffic light", "type": "mask" },
+        { "id": 12, "name": "pole", "type": "mask" },
+        { "id": 13, "name": "traffic sign", "type": "mask" }
+      ]
+
+spec:
+  description: SAM 3 text-prompted segmentation for the Day03 lab tasks (CPU)
+  runtime: 'python:3.12'
+  handler: main:handler
+  eventTimeout: 600s
+
+  build:
+    image: cvat.sam3.autolabel
+    baseImage: cvat.sam3.base  # built from nuclio/Dockerfile by deploy.sh
+
+  triggers:
+    myHttpTrigger:
+      numWorkers: 1
+      kind: 'http'
+      workerAvailabilityTimeoutMilliseconds: 10000
+      attributes:
+        maxRequestBodySize: 33554432 # 32MB
+
+  platform:
+    attributes:
+      restartPolicy:
+        name: always
+        maximumRetryCount: 3
+      mountMode: volume
+      network: cvat_cvat  # CVAT compose network (deploy.ps1 cannot pass --platform-config)

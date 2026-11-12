@@ -1,0 +1,9 @@
+# Extra compose file for the CVAT checkout: CPU SAM 3 needs minutes per image, CVAT's default
+# per-call nuclio timeout is 120 s. Must be >= eventTimeout in nuclio/function.yaml (600 s).
+services:
+  cvat_server:
+    environment:
+      CVAT_NUCLIO_DEFAULT_TIMEOUT: 900
+  cvat_worker_annotation:
+    environment:
+      CVAT_NUCLIO_DEFAULT_TIMEOUT: 900

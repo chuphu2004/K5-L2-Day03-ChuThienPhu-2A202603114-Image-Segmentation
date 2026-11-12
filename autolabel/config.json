@@ -1,0 +1,24 @@
+{
+  "checkpoint": "weights/sam3.pt",
+  "match_max_dist": 12,
+  "default_threshold": 0.4,
+  "thresholds": {"car": 0.6, "truck": 0.6, "traffic light": 0.5, "person": 0.5, "motorcycle": 0.3, "bicycle": 0.3, "road": 0.1, "sidewalk": 0.1, "building": 0.1, "vegetation": 0.1, "sky": 0.1},
+  "min_area": 16,
+  "nms_iou": 0.5,
+  "prompts": {
+    "road": ["road"],
+    "sidewalk": ["sidewalk", "walkway"],
+    "building": ["building"],
+    "vegetation": ["vegetation", "tree"],
+    "sky": ["sky"],
+    "person": ["person"],
+    "bicycle": ["bicycle"],
+    "car": ["car"],
+    "motorcycle": ["motorcycle"],
+    "bus": ["bus"],
+    "truck": ["truck"],
+    "traffic light": ["traffic light"],
+    "pole": ["pole"],
+    "traffic sign": ["traffic sign"]
+  }
+}
